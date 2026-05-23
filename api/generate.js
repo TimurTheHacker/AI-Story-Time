@@ -35,7 +35,11 @@ function buildUserMessage({ mode, prompt, structure, characters, genre, wordCoun
     }
   }
 
-  return `Write a ${genre} story of approximately ${wordCount} words.\n\n${premisePart}${characterPart}`;
+  const wordTarget = wordCount === 2000
+    ? 'approximately 2000 words — finish the story naturally even if it runs up to 150 words longer; never stop mid-scene'
+    : `approximately ${wordCount} words`;
+
+  return `Write a ${genre} story of ${wordTarget}.\n\n${premisePart}${characterPart}`;
 }
 
 module.exports.default = async function handler(req, res) {
