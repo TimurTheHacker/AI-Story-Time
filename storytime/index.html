@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storytime — AI Story Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="layout">
+
+    <!-- ── Controls Panel ── -->
+    <aside class="controls" id="controls">
+      <div class="controls-inner">
+
+        <div class="brand">
+          <div class="brand-icon">📖</div>
+          <div>
+            <div class="brand-name">Storytime</div>
+            <div class="brand-tag">AI Story Generator</div>
+          </div>
+        </div>
+
+        <!-- Genre -->
+        <div class="field-group">
+          <label class="field-label">Genre</label>
+          <div class="genre-grid" id="genre-grid">
+            <button class="genre-btn" data-genre="Comedy">😄<span>Comedy</span></button>
+            <button class="genre-btn" data-genre="Mystery">🔍<span>Mystery</span></button>
+            <button class="genre-btn" data-genre="Adventure">⚔️<span>Adventure</span></button>
+            <button class="genre-btn" data-genre="Horror">👻<span>Horror</span></button>
+            <button class="genre-btn" data-genre="Romance">💕<span>Romance</span></button>
+            <button class="genre-btn" data-genre="Sci-Fi">🚀<span>Sci-Fi</span></button>
+            <button class="genre-btn" data-genre="Fantasy">🧙<span>Fantasy</span></button>
+            <button class="genre-btn" data-genre="Thriller">🕵️<span>Thriller</span></button>
+          </div>
+        </div>
+
+        <!-- Length -->
+        <div class="field-group">
+          <label class="field-label">Length</label>
+          <div class="length-row" id="length-row">
+            <button class="length-btn" data-length="short">
+              <span class="length-name">Short</span>
+              <span class="length-words">~200 words</span>
+            </button>
+            <button class="length-btn" data-length="medium">
+              <span class="length-name">Medium</span>
+              <span class="length-words">~600 words</span>
+            </button>
+            <button class="length-btn" data-length="long">
+              <span class="length-name">Long</span>
+              <span class="length-words">~2000 words</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Prompt -->
+        <div class="field-group">
+          <label class="field-label" for="prompt-input">Your Premise</label>
+          <textarea
+            id="prompt-input"
+            class="prompt-textarea"
+            maxlength="500"
+            placeholder="Describe your story idea…&#10;e.g. &quot;A detective afraid of the dark solves a crime in a lighthouse&quot;"
+          ></textarea>
+          <div class="char-row">
+            <span id="char-count">0</span><span class="char-max">/500</span>
+          </div>
+        </div>
+
+        <!-- Validation message -->
+        <div class="validation-msg" id="validation-msg" hidden></div>
+
+        <!-- Generate button -->
+        <button class="generate-btn" id="generate-btn">
+          <span class="generate-label" id="generate-label">Generate Story</span>
+          <span class="generate-icon">✨</span>
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- ── Story Panel ── -->
+    <main class="story-panel" id="story-panel">
+
+      <div class="story-topbar">
+        <h1 class="story-heading">Your Story</h1>
+        <div class="story-actions" id="story-actions" hidden>
+          <button class="action-btn" id="copy-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copy-label">Copy</span>
+          </button>
+          <button class="action-btn" id="regen-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>Regenerate</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="story-body" id="story-body">
+
+        <!-- Empty state -->
+        <div class="state-empty" id="state-empty">
+          <div class="state-icon">✍️</div>
+          <p class="state-title">Your story will appear here</p>
+          <p class="state-sub">Choose a genre, pick a length, and describe your premise to begin</p>
+        </div>
+
+        <!-- Loading state -->
+        <div class="state-loading" id="state-loading" hidden>
+          <div class="loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="loading-label">Crafting your story…</p>
+        </div>
+
+        <!-- Error state -->
+        <div class="state-error" id="state-error" hidden>
+          <div class="state-icon">⚠️</div>
+          <p class="state-title" id="error-msg">Something went wrong</p>
+          <p class="state-sub">Please try again</p>
+        </div>
+
+        <!-- Story text -->
+        <div class="story-text" id="story-text" hidden></div>
+
+      </div>
+    </main>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
