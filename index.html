@@ -55,17 +55,82 @@
           </div>
         </div>
 
-        <!-- Prompt -->
+        <!-- Premise -->
         <div class="field-group">
-          <label class="field-label" for="prompt-input">Your Premise</label>
-          <textarea
-            id="prompt-input"
-            class="prompt-textarea"
-            maxlength="500"
-            placeholder="Describe your story idea…&#10;e.g. &quot;A detective afraid of the dark solves a crime in a lighthouse&quot;"
-          ></textarea>
-          <div class="char-row">
-            <span id="char-count">0</span><span class="char-max">/500</span>
+          <label class="field-label">Premise</label>
+          <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="prompt">Prompt</button>
+            <button class="mode-btn" data-mode="structured">Structured</button>
+          </div>
+
+          <!-- Prompt mode -->
+          <div id="premise-prompt">
+            <textarea
+              id="prompt-input"
+              class="prompt-textarea"
+              maxlength="500"
+              placeholder="Describe your story idea…&#10;e.g. &quot;A detective afraid of the dark solves a crime in a lighthouse&quot;"
+            ></textarea>
+            <div class="char-row">
+              <span id="char-count">0</span><span class="char-max">/500</span>
+            </div>
+          </div>
+
+          <!-- Structured mode -->
+          <div id="premise-structured" hidden>
+            <div class="structured-fields">
+              <div class="structured-field">
+                <label class="structured-label">Exposition / Introduction</label>
+                <textarea class="structured-textarea" id="struct-exposition" maxlength="200" placeholder="Set the scene, introduce the world and characters…"></textarea>
+                <div class="structured-char-row"><span id="struct-exposition-count">0</span>/200</div>
+              </div>
+              <div class="structured-field">
+                <label class="structured-label">Inciting Incident</label>
+                <textarea class="structured-textarea" id="struct-inciting" maxlength="200" placeholder="The event that kicks off the story…"></textarea>
+                <div class="structured-char-row"><span id="struct-inciting-count">0</span>/200</div>
+              </div>
+              <div class="structured-field">
+                <label class="structured-label">Rising Action</label>
+                <textarea class="structured-textarea" id="struct-rising" maxlength="200" placeholder="Complications and escalating tension…"></textarea>
+                <div class="structured-char-row"><span id="struct-rising-count">0</span>/200</div>
+              </div>
+              <div class="structured-field">
+                <label class="structured-label">Climax</label>
+                <textarea class="structured-textarea" id="struct-climax" maxlength="200" placeholder="The peak moment of conflict or revelation…"></textarea>
+                <div class="structured-char-row"><span id="struct-climax-count">0</span>/200</div>
+              </div>
+              <div class="structured-field">
+                <label class="structured-label">Falling Action / Ending</label>
+                <textarea class="structured-textarea" id="struct-falling" maxlength="200" placeholder="Resolution and aftermath…"></textarea>
+                <div class="structured-char-row"><span id="struct-falling-count">0</span>/200</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Characters -->
+        <div class="field-group">
+          <label class="field-label">Characters <span class="optional-tag">optional</span></label>
+          <div class="char-section">
+            <div class="char-name-row">
+              <div class="char-name-field">
+                <label class="char-label">Protagonist</label>
+                <input type="text" id="char-protagonist" class="char-input" placeholder="Name…" maxlength="60">
+              </div>
+              <div class="char-name-field">
+                <label class="char-label">Antagonist</label>
+                <input type="text" id="char-antagonist" class="char-input" placeholder="Name…" maxlength="60">
+              </div>
+            </div>
+            <div class="char-field">
+              <label class="char-label">Supporting Characters</label>
+              <textarea id="char-supporting" class="char-textarea" rows="2" maxlength="200" placeholder="Other characters and their roles…"></textarea>
+            </div>
+            <div class="char-field">
+              <label class="char-label">Character Descriptions</label>
+              <textarea id="char-descriptions" class="char-textarea" rows="3" maxlength="250" placeholder="Appearance, personality, backstory…"></textarea>
+              <div class="structured-char-row"><span id="char-desc-count">0</span>/250</div>
+            </div>
           </div>
         </div>
 

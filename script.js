@@ -1,21 +1,25 @@
 /* ── State ── */
-let selectedGenre = null;
+let selectedGenre  = null;
 let selectedLength = null;
-let isGenerating = false;
-let lastParams = null; // for Regenerate
+let selectedMode   = 'prompt';
+let isGenerating   = false;
+let lastParams     = null;
 
 /* ── DOM ── */
-const genreBtns    = document.querySelectorAll('.genre-btn');
-const lengthBtns   = document.querySelectorAll('.length-btn');
-const promptInput  = document.getElementById('prompt-input');
-const charCount    = document.getElementById('char-count');
-const generateBtn  = document.getElementById('generate-btn');
-const generateLabel = document.getElementById('generate-label');
-const storyActions = document.getElementById('story-actions');
-const copyBtn      = document.getElementById('copy-btn');
-const copyLabel    = document.getElementById('copy-label');
-const regenBtn     = document.getElementById('regen-btn');
-const validationMsg = document.getElementById('validation-msg');
+const genreBtns         = document.querySelectorAll('.genre-btn');
+const lengthBtns        = document.querySelectorAll('.length-btn');
+const modeBtns          = document.querySelectorAll('.mode-btn');
+const promptInput       = document.getElementById('prompt-input');
+const charCount         = document.getElementById('char-count');
+const premisePrompt     = document.getElementById('premise-prompt');
+const premiseStructured = document.getElementById('premise-structured');
+const generateBtn       = document.getElementById('generate-btn');
+const generateLabel     = document.getElementById('generate-label');
+const storyActions      = document.getElementById('story-actions');
+const copyBtn           = document.getElementById('copy-btn');
+const copyLabel         = document.getElementById('copy-label');
+const regenBtn          = document.getElementById('regen-btn');
+const validationMsg     = document.getElementById('validation-msg');
 
 const stateEmpty   = document.getElementById('state-empty');
 const stateLoading = document.getElementById('state-loading');
@@ -44,18 +48,70 @@ lengthBtns.forEach(btn => {
   });
 });
 
-/* ── Character counter ── */
+/* ── Mode toggle ── */
+modeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    modeBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode = btn.dataset.mode;
+    premisePrompt.hidden     = selectedMode !== 'prompt';
+    premiseStructured.hidden = selectedMode !== 'structured';
+    clearValidation();
+  });
+});
+
+/* ── Char counter (prompt) ── */
 promptInput.addEventListener('input', () => {
   charCount.textContent = promptInput.value.length;
   clearValidation();
 });
 
-/* ── Generate ── */
-generateBtn.addEventListener('click', () => {
-  const prompt = promptInput.value.trim();
-  const params = { genre: selectedGenre, length: selectedLength, prompt };
-  generate(params);
+/* ── Char counters (structured fields) ── */
+[
+  ['struct-exposition', 'struct-exposition-count'],
+  ['struct-inciting',   'struct-inciting-count'],
+  ['struct-rising',     'struct-rising-count'],
+  ['struct-climax',     'struct-climax-count'],
+  ['struct-falling',    'struct-falling-count'],
+].forEach(([id, countId]) => {
+  document.getElementById(id).addEventListener('input', function () {
+    document.getElementById(countId).textContent = this.value.length;
+    clearValidation();
+  });
 });
+
+/* ── Char counter (character descriptions) ── */
+const charDescTextarea = document.getElementById('char-descriptions');
+const charDescCountEl  = document.getElementById('char-desc-count');
+charDescTextarea.addEventListener('input', () => {
+  charDescCountEl.textContent = charDescTextarea.value.length;
+});
+
+/* ── Build params from current form state ── */
+function buildParams() {
+  return {
+    genre:  selectedGenre,
+    length: selectedLength,
+    mode:   selectedMode,
+    prompt: promptInput.value.trim(),
+    structure: {
+      exposition:       document.getElementById('struct-exposition').value.trim(),
+      incitingIncident: document.getElementById('struct-inciting').value.trim(),
+      risingAction:     document.getElementById('struct-rising').value.trim(),
+      climax:           document.getElementById('struct-climax').value.trim(),
+      fallingAction:    document.getElementById('struct-falling').value.trim(),
+    },
+    characters: {
+      protagonist:  document.getElementById('char-protagonist').value.trim(),
+      antagonist:   document.getElementById('char-antagonist').value.trim(),
+      supporting:   document.getElementById('char-supporting').value.trim(),
+      descriptions: document.getElementById('char-descriptions').value.trim(),
+    },
+  };
+}
+
+/* ── Generate ── */
+generateBtn.addEventListener('click', () => generate(buildParams()));
 
 /* ── Regenerate ── */
 regenBtn.addEventListener('click', () => {
@@ -76,17 +132,22 @@ copyBtn.addEventListener('click', async () => {
 });
 
 /* ── Core generate function ── */
-async function generate({ genre, length, prompt }) {
+async function generate({ genre, length, mode, prompt, structure, characters }) {
   if (isGenerating) return;
 
-  // Validate
-  if (!genre) { showValidation('Please select a genre.'); return; }
+  if (!genre)  { showValidation('Please select a genre.'); return; }
   if (!length) { showValidation('Please select a story length.'); return; }
-  if (!prompt) { showValidation('Please enter a story premise.'); return; }
+
+  if (mode === 'prompt') {
+    if (!prompt) { showValidation('Please enter a story premise.'); return; }
+  } else {
+    const hasAny = Object.values(structure).some(v => v);
+    if (!hasAny) { showValidation('Please fill in at least one story structure field.'); return; }
+  }
 
   clearValidation();
   isGenerating = true;
-  lastParams = { genre, length, prompt };
+  lastParams = { genre, length, mode, prompt, structure, characters };
 
   setGeneratingUI(true);
   showPanel('loading');
@@ -97,7 +158,7 @@ async function generate({ genre, length, prompt }) {
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ genre, length, prompt }),
+      body: JSON.stringify({ genre, length, mode, prompt, structure, characters }),
     });
 
     if (!response.ok) {
@@ -139,7 +200,6 @@ function renderStory(text) {
   storyText.innerHTML = paragraphs
     .map(p => `<p>${escapeHtml(p)}</p>`)
     .join('');
-  // Auto-scroll to the bottom as text streams in
   storyBody.scrollTop = storyBody.scrollHeight;
 }
 

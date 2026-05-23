@@ -8,6 +8,36 @@ module.exports.config = {
 const VALID_GENRES = ['Comedy', 'Mystery', 'Adventure', 'Horror', 'Romance', 'Sci-Fi', 'Fantasy', 'Thriller'];
 const WORD_COUNTS = { short: 200, medium: 600, long: 2000 };
 
+function buildUserMessage({ mode, prompt, structure, characters, genre, wordCount }) {
+  let premisePart;
+
+  if (mode === 'structured') {
+    const parts = [];
+    if (structure.exposition)       parts.push(`Exposition/Introduction: ${structure.exposition}`);
+    if (structure.incitingIncident) parts.push(`Inciting Incident: ${structure.incitingIncident}`);
+    if (structure.risingAction)     parts.push(`Rising Action: ${structure.risingAction}`);
+    if (structure.climax)           parts.push(`Climax: ${structure.climax}`);
+    if (structure.fallingAction)    parts.push(`Falling Action/Ending: ${structure.fallingAction}`);
+    premisePart = `Story Structure:\n${parts.join('\n')}`;
+  } else {
+    premisePart = `Premise: ${prompt}`;
+  }
+
+  let characterPart = '';
+  if (characters) {
+    const parts = [];
+    if (characters.protagonist)  parts.push(`Protagonist: ${characters.protagonist}`);
+    if (characters.antagonist)   parts.push(`Antagonist: ${characters.antagonist}`);
+    if (characters.supporting)   parts.push(`Supporting Characters: ${characters.supporting}`);
+    if (characters.descriptions) parts.push(`Character Descriptions: ${characters.descriptions}`);
+    if (parts.length > 0) {
+      characterPart = `\n\nCharacters:\n${parts.join('\n')}`;
+    }
+  }
+
+  return `Write a ${genre} story of approximately ${wordCount} words.\n\n${premisePart}${characterPart}`;
+}
+
 module.exports.default = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -20,10 +50,10 @@ module.exports.default = async function handler(req, res) {
   }
   body = body ?? {};
 
-  const { genre, length, prompt } = body;
+  const { genre, length, mode = 'prompt', prompt, structure = {}, characters = {} } = body;
 
-  if (!genre || !length || !prompt) {
-    res.status(400).json({ error: 'Missing required fields: genre, length, prompt' });
+  if (!genre || !length) {
+    res.status(400).json({ error: 'Missing required fields: genre, length' });
     return;
   }
   if (!VALID_GENRES.includes(genre)) {
@@ -33,6 +63,19 @@ module.exports.default = async function handler(req, res) {
   if (!WORD_COUNTS[length]) {
     res.status(400).json({ error: 'Invalid length. Must be short, medium, or long.' });
     return;
+  }
+
+  if (mode === 'prompt') {
+    if (!prompt) {
+      res.status(400).json({ error: 'Missing required field: prompt' });
+      return;
+    }
+  } else {
+    const hasAny = Object.values(structure).some(v => v && v.trim());
+    if (!hasAny) {
+      res.status(400).json({ error: 'At least one story structure field is required' });
+      return;
+    }
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -60,7 +103,7 @@ module.exports.default = async function handler(req, res) {
       messages: [
         {
           role: 'user',
-          content: `Write a ${genre} story of approximately ${wordCount} words.\n\nPremise: ${prompt}`,
+          content: buildUserMessage({ mode, prompt, structure, characters, genre, wordCount }),
         },
       ],
     });
