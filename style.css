@@ -402,6 +402,16 @@ html, body {
   40%           { transform: scale(1);   opacity: 1; }
 }
 
+/* Story title */
+.story-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 1.2em;
+}
+
 /* Story text typography */
 .story-text {
   font-family: Arial, Helvetica, sans-serif;

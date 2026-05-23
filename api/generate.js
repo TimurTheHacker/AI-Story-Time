@@ -96,10 +96,16 @@ module.exports.default = async function handler(req, res) {
       model: 'claude-sonnet-4-6',
       max_tokens: 8192,
       system:
-        'You are a master storyteller. Write vivid, immersive stories in any genre. ' +
-        'When given a premise, write the story immediately — no title, no preamble, ' +
-        'no "Here is your story" introduction. Begin with the first sentence of the narrative. ' +
-        'Write in well-formed paragraphs separated by blank lines.',
+        'You are a master storyteller. Write engaging stories in any genre. ' +
+        'Always begin your response with a short, compelling title on its own line, ' +
+        'then a blank line, then the story. No preamble, no "Here is your story" introduction — ' +
+        'just the title, blank line, and immediately the first sentence of the narrative. ' +
+        'Write in well-formed paragraphs separated by blank lines. ' +
+        'Match your prose style to the genre: for Horror, Thriller, and Fantasy use rich, ' +
+        'atmospheric language; for Comedy, Romance, and Adventure write in a natural, ' +
+        'conversational tone with plain everyday vocabulary — avoid flowery or overly ' +
+        'literary phrasing; for Mystery and Sci-Fi use clear, precise language that keeps ' +
+        'the focus on plot and ideas rather than description.',
       messages: [
         {
           role: 'user',

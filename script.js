@@ -194,11 +194,13 @@ async function generate({ genre, length, mode, prompt, structure, characters }) 
   }
 }
 
-/* Converts raw text (with \n\n paragraph breaks) to <p> elements */
+/* Converts raw text (with \n\n paragraph breaks) to HTML; first block is the title */
 function renderStory(text) {
   const paragraphs = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
   storyText.innerHTML = paragraphs
-    .map(p => `<p>${escapeHtml(p)}</p>`)
+    .map((p, i) => i === 0
+      ? `<div class="story-title">${escapeHtml(p)}</div>`
+      : `<p>${escapeHtml(p)}</p>`)
     .join('');
   storyBody.scrollTop = storyBody.scrollHeight;
 }
